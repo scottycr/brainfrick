@@ -10,7 +10,8 @@ enum Symbol {
 	LESS, GREATER, 
 	COMMA, DOT, 
 	OPENBRACKET, CLOSEBRACKET,
-	END, UNRECOGNIZED
+	TOP, END,
+	UNRECOGNIZED
 };
 
 class Token {
@@ -44,6 +45,7 @@ class Token {
 			case DOT: out << "Token: Dot"; break;
 			case OPENBRACKET: out << "Token: Open Bracket"; break;
 			case CLOSEBRACKET: out << "Token: Closed Bracket"; break;
+			case TOP: out << "Token: TOP"; break;
 			case END: out << "Token: END"; break;
 			case UNRECOGNIZED: out << "Token: Unrecognized"; break;
 		}
@@ -77,8 +79,8 @@ public:
 
 	// Since Brainfrick ignores most symbols, 
 	// the function below helps the scanner ignore the right symbols. 
-	inline bool const canIgnoreChar(const char &c) {
-		return !(
+	inline bool const isBrainFOp() {
+		return (
 			text[pos]=='+' ||
 			text[pos]=='-' ||
 			text[pos]=='<' ||
@@ -98,7 +100,7 @@ public:
 	inline bool canParse() const { return pos < text.length(); }
 	Token parse() {
 		while (
-			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || canIgnoreChar(text[pos])) && 
+			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || !isBrainFOp()) && 
 			pos<text.size()
 		) {
 		   	if (text[pos]=='\n') {
