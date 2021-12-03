@@ -59,28 +59,54 @@ private:
 	string fileName;
 	
 	unsigned pos;
-	int lineNum;
-	int column;
+	unsigned lastSymbolPos;
+	unsigned lineNum;
+	unsigned column;
 public:
 	Tokenizer(string s, string newFileName=""){
 		text = s;
 		fileName = newFileName;
 		pos = 0;
+		lastSymbolPos = 0;
 		lineNum = 1;
 		column = 1;
 	}
 
-	inline void outputError(string message) {
-	  	cerr << fileName <<':' << lineNum << ':' << column << ": error: " << message <<endl;
+	inline void outputError(string message, bool showLine=false, ostream &out=cerr) {
+		out << fileName << ':' << lineNum << ':' << column << ": error: " << message << endl;
+		if (showLine) {
+			unsigned line = 1;
+			unsigned startPos = 0;
+
+			while (line != lineNum) {
+				while (text[startPos] != '\n') startPos++;
+				line++;
+			}
+
+			// Makes sure startPos tracks the character after the '\n'.
+			// Want startPos to be 0 if the error is on line 1.
+			if (line != 1) startPos++;
+
+			string errorPrefix = "    " + to_string(lineNum) + " | ";
+			string errorLine = text.substr(startPos, lastSymbolPos);
+			out << errorPrefix << errorLine << endl;
+			// 2 is used so the '|' character can print without messing up the formatting.
+			for (unsigned i=0; i<errorPrefix.length()-2; i++)
+				out << ' ';
+			out << '|';
+			for (unsigned i=0; i<(lastSymbolPos-startPos); i++)
+				out << ' ';
+			out << '^' << endl;
+		}
 	}
 
 	inline string const getText() { return text; }
 	inline unsigned const getPosition() { return pos; }
 
 	// Since Brainfrick ignores most symbols, 
-	// the function below helps the scanner ignore the right symbols. 
-	inline bool const isOp() {
-		return (
+	// this function helps the scanner ignore the right symbols. 
+	inline bool const notSymbol() {
+		return !(
 			text[pos]=='+' ||
 			text[pos]=='-' ||
 			text[pos]=='<' ||
@@ -100,7 +126,7 @@ public:
 	inline bool canScan() const { return pos < text.length(); }
 	Token scan() {
 		while (
-			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || !isOp()) && 
+			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || notSymbol()) && 
 			pos<text.size()
 		) {
 		   	if (text[pos]=='\n') {
@@ -112,27 +138,35 @@ public:
 
 	    if (text[pos]=='+') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(PLUS);
 		} else if (text[pos]=='-') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(MINUS);
 		} else if (text[pos]=='<') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(LESS);
 		} else if (text[pos]=='>') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(GREATER);
 		} else if (text[pos]==',') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(COMMA);
 		} else if (text[pos]=='.') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(DOT);
 		} else if (text[pos]=='[') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(OPENBRACKET);
 		} else if (text[pos]==']') {
 			incPos();
+			lastSymbolPos = pos;
 			return Token(CLOSEBRACKET);
 		}
 
