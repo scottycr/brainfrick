@@ -1,10 +1,7 @@
 #include <fstream>
 #include <sstream>
-#include <string>
-#include <iostream>
 
 #include "BrainTokenizer.hpp"
-#include "BrainAST.hpp"
 #include "BrainParser.hpp"
 
 using namespace std;
@@ -16,11 +13,11 @@ int main() {
 	sstr << in.rdbuf();
 	
 	Tokenizer t(sstr.str(), "test.bf");
-	Node *AST = new Node(Token(TOP));
+	vector<Token> program;
 
-	if (expression(t, AST)) {
+	if (parse(t, program)) {
 		cout << "Let's go!" << endl;
-		cout << AST << endl;
+		for (auto &t : program) cout << t << endl;
 	} else {
 		cout << "Nope" << endl;
 	}

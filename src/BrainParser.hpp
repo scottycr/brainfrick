@@ -1,49 +1,81 @@
 #pragma once
 
-#include <iostream>
+#include <vector>
 
 #include "BrainTokenizer.hpp"
-#include "BrainAST.hpp"
 
 /*	Source: https://rosettacode.org/wiki/BNF_Grammar#Brainf.2A.2A.2A
 	
 BNF Notation for Brainf***:
 	Code ::= Command Code | <NONE>
  	Command ::= "+" | "-" | "<" | ">" | "," | "." | "[" Code "]" | <ANY> */
-bool expression(Tokenizer &t, Node *AST) {
-	Token next = t.parse();
-	if (
-		next.getSymbol() == PLUS 	||
-		next.getSymbol() == MINUS 	||
-		next.getSymbol() == LESS 	||
-		next.getSymbol() == GREATER ||
-		next.getSymbol() == COMMA	||
-		next.getSymbol() == DOT
-	) {
-		AST->setToken(next);
-		Node *tmp = new Node(Token(TOP));
-		if (expression(t, tmp)) {
-			AST->addNode(tmp);
-			return true;
-		};
-		delete tmp;
-	} else if (next.getSymbol()==OPENBRACKET) {
-		Node *tmp2 = new Node(Token(TOP));
-		if (expression(t, tmp2)) {
-			next=t.parse();
-			if (next.getSymbol()==CLOSEBRACKET) {
-                AST->shallowCopy(tmp2);
-				return true;
-			} 
-		}
-		delete tmp2;
-	}
 
-	if (next.getSymbol()==END) {
-		AST->setToken(END);
+inline bool isSimpleOp(Token &next) {
+	return (
+		next == PLUS 		||
+		next == MINUS		||
+		next == GREATER 	||
+		next == LESS 		||
+		next == COMMA		||
+		next == DOT
+	);
+}
+
+bool loop(Tokenizer &t, vector<Token> &program) {
+	Token next;
+	if (t.canScan()) {
+		next = t.scan();
+		vector<Token> tmp;
+		while (next != CLOSEBRACKET && t.canScan()) {
+			if (next != OPENBRACKET) {
+				tmp.push_back(next);
+			} else {
+				vector<Token> tmp2;
+				if (loop(t, tmp2)) {
+					for (auto t : tmp2) tmp.push_back(t);
+				} else {
+					return false;
+				}
+			}
+		}
+
+		if (next != CLOSEBRACKET) {
+			t.outputError("No closing bracket found.");
+			return false;
+		}
+
+		program = tmp;
 		return true;
 	}
 
-    t.outputError("Expression not found");
-    return false; // Probably should generate an error message.
+	t.outputError("Not a valid loop.");
+	return false;
+}
+
+bool parse(Tokenizer &t, vector<Token> &program) {
+	Token next;
+	vector<Token> tmp;
+	while (t.canScan()) {
+		next = t.scan();
+		if (isSimpleOp(next)) {
+			tmp.push_back(next);
+		} else if (next == OPENBRACKET) {
+			tmp.push_back(next);
+			vector<Token> tmp2;
+			if (loop(t, tmp2)) {
+				for (auto t : tmp2) tmp.push_back(t);
+			} else {
+				return false;
+			}
+		}
+	}
+
+	next = t.scan();
+	if (next == END) {
+		program = tmp;
+		return true;
+	}
+
+	t.outputError("EOF was not reached.");
+	return false;
 }
