@@ -79,7 +79,7 @@ public:
 
 	// Since Brainfrick ignores most symbols, 
 	// the function below helps the scanner ignore the right symbols. 
-	inline bool const isBrainFOp() {
+	inline bool const isOp() {
 		return (
 			text[pos]=='+' ||
 			text[pos]=='-' ||
@@ -97,10 +97,10 @@ public:
 		column += value;
 	}
 
-	inline bool canParse() const { return pos < text.length(); }
-	Token parse() {
+	inline bool canScan() const { return pos < text.length(); }
+	Token scan() {
 		while (
-			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || !isBrainFOp()) && 
+			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || !isOp()) && 
 			pos<text.size()
 		) {
 		   	if (text[pos]=='\n') {
@@ -136,7 +136,7 @@ public:
 			return Token(CLOSEBRACKET);
 		}
 
-		if (!canParse()) return Token(END);
+		if (!canScan()) return Token(END);
 
 	  	outputError("Unrecognized Token: " + text[pos]);
 	  	return Token(UNRECOGNIZED);
