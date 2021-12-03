@@ -10,7 +10,12 @@ BNF Notation for Brainf***:
 	Code ::= Command Code | <NONE>
  	Command ::= "+" | "-" | "<" | ">" | "," | "." | "[" Code "]" | <ANY> */
 
-inline bool isSimpleOp(Token &next) {
+/* Modified BNF for Brainfrick:
+	Command Operation 	::= "+" | "-" | "<" | ">" | "," | "."
+	Command 			::= Command Operation | "[" Command Operation "]"
+*/
+
+inline bool commandOperation(Token &next) {
 	return (
 		next == PLUS 		||
 		next == MINUS		||
@@ -21,34 +26,35 @@ inline bool isSimpleOp(Token &next) {
 	);
 }
 
-bool loop(Tokenizer &t, vector<Token> &program) {
+bool command(Tokenizer &t, vector<Token> &program) {
 	Token next;
 	if (t.canScan()) {
 		next = t.scan();
 		vector<Token> tmp;
 		while (next != CLOSEBRACKET && t.canScan()) {
-			if (next != OPENBRACKET) {
-				tmp.push_back(next);
-			} else {
+			tmp.push_back(next);
+			if (next == OPENBRACKET) {
 				vector<Token> tmp2;
-				if (loop(t, tmp2)) {
+				if (command(t, tmp2)) {
 					for (auto t : tmp2) tmp.push_back(t);
 				} else {
 					return false;
 				}
 			}
+			next = t.scan();
 		}
 
 		if (next != CLOSEBRACKET) {
-			t.outputError("No closing bracket found.");
+			t.outputError("Expected a ']' at end of input", true);
 			return false;
 		}
 
+		tmp.push_back(next);
 		program = tmp;
 		return true;
 	}
 
-	t.outputError("Not a valid loop.");
+	t.outputError("Reached end of file");
 	return false;
 }
 
@@ -57,12 +63,12 @@ bool parse(Tokenizer &t, vector<Token> &program) {
 	vector<Token> tmp;
 	while (t.canScan()) {
 		next = t.scan();
-		if (isSimpleOp(next)) {
+		if (commandOperation(next)) {
 			tmp.push_back(next);
 		} else if (next == OPENBRACKET) {
 			tmp.push_back(next);
 			vector<Token> tmp2;
-			if (loop(t, tmp2)) {
+			if (command(t, tmp2)) {
 				for (auto t : tmp2) tmp.push_back(t);
 			} else {
 				return false;
@@ -76,6 +82,5 @@ bool parse(Tokenizer &t, vector<Token> &program) {
 		return true;
 	}
 
-	t.outputError("EOF was not reached.");
 	return false;
 }
