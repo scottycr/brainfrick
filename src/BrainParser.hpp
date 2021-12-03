@@ -15,7 +15,7 @@ BNF Notation for Brainf***:
 	Command 			::= Command Operation | "[" Command Operation "]"
 */
 
-inline bool commandOperation(Token &next) {
+inline bool commandOperation(Symbol &next) {
 	return (
 		next == PLUS 		||
 		next == MINUS		||
@@ -26,15 +26,15 @@ inline bool commandOperation(Token &next) {
 	);
 }
 
-bool command(Tokenizer &t, vector<Token> &program) {
-	Token next;
+bool command(Tokenizer &t, vector<Symbol> &program) {
+	Symbol next;
 	if (t.canScan()) {
 		next = t.scan();
-		vector<Token> tmp;
+		vector<Symbol> tmp;
 		while (next != CLOSEBRACKET && t.canScan()) {
 			tmp.push_back(next);
 			if (next == OPENBRACKET) {
-				vector<Token> tmp2;
+				vector<Symbol> tmp2;
 				if (command(t, tmp2)) {
 					for (auto t : tmp2) tmp.push_back(t);
 				} else {
@@ -58,16 +58,16 @@ bool command(Tokenizer &t, vector<Token> &program) {
 	return false;
 }
 
-bool parse(Tokenizer &t, vector<Token> &program) {
-	Token next;
-	vector<Token> tmp;
+bool parse(Tokenizer &t, vector<Symbol> &program) {
+	Symbol next;
+	vector<Symbol> tmp;
 	while (t.canScan()) {
 		next = t.scan();
 		if (commandOperation(next)) {
 			tmp.push_back(next);
 		} else if (next == OPENBRACKET) {
 			tmp.push_back(next);
-			vector<Token> tmp2;
+			vector<Symbol> tmp2;
 			if (command(t, tmp2)) {
 				for (auto t : tmp2) tmp.push_back(t);
 			} else {

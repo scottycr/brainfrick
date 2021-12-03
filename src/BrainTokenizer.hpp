@@ -6,52 +6,29 @@
 using namespace std;
 
 enum Symbol {
-	PLUS, MINUS, 
-	LESS, GREATER, 
-	COMMA, DOT, 
+	// Command Operations
+	PLUS, MINUS, LESS, GREATER, COMMA, DOT, 
+	// Loop Operations
 	OPENBRACKET, CLOSEBRACKET,
-	TOP, END,
-	UNRECOGNIZED
+	// Misc.
+	END, UNRECOGNIZED
 };
 
-class Token {
-	string value;
-	Symbol symbol;
-	public:
-	Token(Symbol newSymbol=UNRECOGNIZED, string newValue=""){
-		symbol = newSymbol;
-		value = newValue;
+ostream &operator << (ostream &out, const Symbol &s) {
+	switch(s) {
+		case PLUS: out << "Symbol: Plus"; break;
+		case MINUS: out << "Symbol: Minus"; break;
+		case LESS: out << "Symbol: Less"; break;
+		case GREATER: out << "Symbol: Greater"; break;
+		case COMMA: out << "Symbol: Comma"; break;
+		case DOT: out << "Symbol: Dot"; break;
+		case OPENBRACKET: out << "Symbol: Open Bracket"; break;
+		case CLOSEBRACKET: out << "Symbol: Closed Bracket"; break;
+		case END: out << "Symbol: END"; break;
+		case UNRECOGNIZED: out << "Symbol: Unrecognized"; break;
 	}
-
-	inline Symbol const getSymbol() { return symbol; }
-	inline string const getValue() { return value; }
-
-	bool operator ==(const Token &other) {
-		if (other.symbol!=symbol) return false;
-		return other.value==value;
-	}
-
-	inline bool operator !=(const Token &other) {
-		return !(*this==other);
-	}
-
-	friend ostream & operator << (ostream &out, const Token &tok) {
-		switch(tok.symbol) {
-			case PLUS: out << "Token: Plus"; break;
-			case MINUS: out << "Token: Minus"; break;
-			case LESS: out << "Token: Less"; break;
-			case GREATER: out << "Token: Greater"; break;
-			case COMMA: out << "Token: Comma"; break;
-			case DOT: out << "Token: Dot"; break;
-			case OPENBRACKET: out << "Token: Open Bracket"; break;
-			case CLOSEBRACKET: out << "Token: Closed Bracket"; break;
-			case TOP: out << "Token: TOP"; break;
-			case END: out << "Token: END"; break;
-			case UNRECOGNIZED: out << "Token: Unrecognized"; break;
-		}
-		return out;
-	}
-};
+	return out;
+}
 
 class Tokenizer{
 private:
@@ -67,6 +44,7 @@ public:
 		text = s;
 		fileName = newFileName;
 		pos = 0;
+		// Used for error messages.
 		lastSymbolPos = 0;
 		lineNum = 1;
 		column = 1;
@@ -100,9 +78,6 @@ public:
 		}
 	}
 
-	inline string const getText() { return text; }
-	inline unsigned const getPosition() { return pos; }
-
 	// Since Brainfrick ignores most symbols, 
 	// this function helps the scanner ignore the right symbols. 
 	inline bool const notSymbol() {
@@ -124,7 +99,7 @@ public:
 	}
 
 	inline bool canScan() const { return pos < text.length(); }
-	Token scan() {
+	Symbol scan() {
 		while (
 			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || notSymbol()) && 
 			pos<text.size()
@@ -139,40 +114,42 @@ public:
 	    if (text[pos]=='+') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(PLUS);
+			return PLUS;
 		} else if (text[pos]=='-') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(MINUS);
+			return MINUS;
 		} else if (text[pos]=='<') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(LESS);
+			return LESS;
 		} else if (text[pos]=='>') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(GREATER);
+			return GREATER;
 		} else if (text[pos]==',') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(COMMA);
+			return COMMA;
 		} else if (text[pos]=='.') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(DOT);
+			return DOT;
 		} else if (text[pos]=='[') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(OPENBRACKET);
+			return OPENBRACKET;
 		} else if (text[pos]==']') {
 			incPos();
 			lastSymbolPos = pos;
-			return Token(CLOSEBRACKET);
+			return CLOSEBRACKET;
 		}
 
-		if (!canScan()) return Token(END);
+		if (!canScan()) return END;
 
-	  	outputError("Unrecognized Token: " + text[pos]);
-	  	return Token(UNRECOGNIZED);
+		// Since Brainfrick ignores almost every character this theoretically should never be reached. 
+		// However, just in case it does it shall remain here.
+	  	outputError("Unrecognized Symbol: " + text[pos]);
+	  	return UNRECOGNIZED;
 	}
 };
