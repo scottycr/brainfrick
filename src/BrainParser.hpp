@@ -73,6 +73,9 @@ bool parse(Tokenizer &t, vector<Symbol> &program) {
 			} else {
 				return false;
 			}
+		} else if (next == CLOSEBRACKET) {
+			t.outputError("expected initializer before ']' token", true);
+			return false;
 		}
 	}
 
