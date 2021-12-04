@@ -14,10 +14,7 @@ void eval(
 	istream &in=cin,
 	unsigned index=0
 ) {
-	unsigned j = 0;
-	// Accounts for nested bracket loops.
-	unsigned bracketsFound = 0;
-	unsigned bracketsNeeded = 0;
+	unsigned j, bracketsFound, bracketsNeeded;
 	for (unsigned i=index; i<program.size(); i++) {
 		switch (program[i]) {
 			case PLUS: ct.add(); break;
@@ -27,25 +24,29 @@ void eval(
 			case DOT: ct.print(out); break;
 			case COMMA: ct.input(in); break;
 			case OPENBRACKET:
-				if (ct.ptrIsNotZero()) {
-					while (ct.ptrIsNotZero()) {
-						eval(program, ct, out, in, i+1);
-					}
-				}
+				while (ct.ptrIsNotZero()) eval(program, ct, out, in, i+1);
+
+				// Temporary index counter 
 				j = i + 1;
+
+				// Accounts for nested bracket loops.
 				bracketsFound = 0;
 				bracketsNeeded = 1;
+
 				// Skips over the code that shouldn't be executed.
 				while (bracketsFound != bracketsNeeded) {
 					if (program[j] == OPENBRACKET) bracketsNeeded++;
 					else if (program[j] == CLOSEBRACKET) bracketsFound++;
 					j++;
 				}
+
+				// Accounts for the increment of i happening right after.
 				i = j - 1;
 				break;
 			case CLOSEBRACKET:
-				if (ct.ptrIsNotZero()) i = index-1;
-				// Breaks out of the function
+				// Accounts for the increment of i happening right after.
+				if (ct.ptrIsNotZero()) i = index - 1;
+				// Breaks out of the function to return to the OPENBRACKET case.
 				else return;
 				break;
 			default:
