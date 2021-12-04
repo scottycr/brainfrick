@@ -50,7 +50,7 @@ public:
 		column = 1;
 	}
 
-	inline void outputError(string message, bool showLine=false, ostream &out=cerr) {
+	void outputError(string message, bool showLine=false, ostream &out=cerr) {
 		out << fileName << ':' << lineNum << ':' << column << ": error: " << message << endl;
 		if (showLine) {
 			unsigned line = 1;
@@ -80,16 +80,16 @@ public:
 
 	// Since Brainfrick ignores most symbols, 
 	// this function helps the scanner ignore the right symbols. 
-	inline bool const notSymbol() {
+	inline bool notSymbol() {
 		return !(
-			text[pos]=='+' ||
-			text[pos]=='-' ||
-			text[pos]=='<' ||
-			text[pos]=='>' ||
-			text[pos]=='.' ||
-			text[pos]==',' ||
-			text[pos]=='[' ||
-			text[pos]==']'
+			text[pos] == '+' ||
+			text[pos] == '-' ||
+			text[pos] == '<' ||
+			text[pos] == '>' ||
+			text[pos] == '.' ||
+			text[pos] == ',' ||
+			text[pos] == '[' ||
+			text[pos] == ']'
 		);
 	}
 
@@ -98,11 +98,27 @@ public:
 		column += value;
 	}
 
-	inline bool canScan() const { return pos < text.length(); }
+	inline bool isEmpty() { return text.empty(); } 
+	inline bool canScan() { return pos < text.length(); }
 	Symbol scan() {
+		// Accounts for a comment loop.
+		// A comment loop is a loop that is at the very start of a file.
+		// This should be ignored by the interpreter.
+		if (pos == 0 && text[pos] == '[') {
+			incPos();
+			// Accounts for nested bracket loops.
+			unsigned bracketsFound = 0;
+			unsigned bracketsNeeded = 1;
+
+			while (bracketsFound != bracketsNeeded) {
+				if (text[pos] == '[') bracketsNeeded++;
+				else if (text[pos] == ']') bracketsFound++;
+				incPos();
+			}
+		}
 		while (
-			(text[pos]==' ' || text[pos]=='\t' || text[pos]=='\n' || notSymbol()) && 
-			pos<text.size()
+			(text[pos] == ' ' || text[pos] == '\t' || text[pos] == '\n' || notSymbol()) && 
+			canScan()
 		) {
 		   	if (text[pos]=='\n') {
 			 	lineNum++;
@@ -111,35 +127,35 @@ public:
 	    	incPos();
 	    }
 
-	    if (text[pos]=='+') {
+	    if (text[pos] == '+') {
 			incPos();
 			lastSymbolPos = pos;
 			return PLUS;
-		} else if (text[pos]=='-') {
+		} else if (text[pos] == '-') {
 			incPos();
 			lastSymbolPos = pos;
 			return MINUS;
-		} else if (text[pos]=='<') {
+		} else if (text[pos] == '<') {
 			incPos();
 			lastSymbolPos = pos;
 			return LESS;
-		} else if (text[pos]=='>') {
+		} else if (text[pos] == '>') {
 			incPos();
 			lastSymbolPos = pos;
 			return GREATER;
-		} else if (text[pos]=='.') {
+		} else if (text[pos] == '.') {
 			incPos();
 			lastSymbolPos = pos;
 			return DOT;
-		} else if (text[pos]==',') {
+		} else if (text[pos] == ',') {
 			incPos();
 			lastSymbolPos = pos;
 			return COMMA;
-		} else if (text[pos]=='[') {
+		} else if (text[pos] == '[') {
 			incPos();
 			lastSymbolPos = pos;
 			return OPENBRACKET;
-		} else if (text[pos]==']') {
+		} else if (text[pos] == ']') {
 			incPos();
 			lastSymbolPos = pos;
 			return CLOSEBRACKET;
