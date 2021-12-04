@@ -21,8 +21,8 @@ inline bool commandOperation(Symbol &next) {
 		next == MINUS		||
 		next == GREATER 	||
 		next == LESS 		||
-		next == COMMA		||
-		next == DOT
+		next == DOT			||
+		next == COMMA 
 	);
 }
 

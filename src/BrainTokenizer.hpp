@@ -7,7 +7,7 @@ using namespace std;
 
 enum Symbol {
 	// Command Operations
-	PLUS, MINUS, LESS, GREATER, COMMA, DOT, 
+	PLUS, MINUS, LESS, GREATER, DOT, COMMA, 
 	// Loop Operations
 	OPENBRACKET, CLOSEBRACKET,
 	// Misc.
@@ -20,8 +20,8 @@ ostream &operator << (ostream &out, const Symbol &s) {
 		case MINUS: out << "Symbol: Minus"; break;
 		case LESS: out << "Symbol: Less"; break;
 		case GREATER: out << "Symbol: Greater"; break;
-		case COMMA: out << "Symbol: Comma"; break;
 		case DOT: out << "Symbol: Dot"; break;
+		case COMMA: out << "Symbol: Comma"; break;
 		case OPENBRACKET: out << "Symbol: Open Bracket"; break;
 		case CLOSEBRACKET: out << "Symbol: Closed Bracket"; break;
 		case END: out << "Symbol: END"; break;
@@ -86,8 +86,8 @@ public:
 			text[pos]=='-' ||
 			text[pos]=='<' ||
 			text[pos]=='>' ||
-			text[pos]==',' ||
 			text[pos]=='.' ||
+			text[pos]==',' ||
 			text[pos]=='[' ||
 			text[pos]==']'
 		);
@@ -127,14 +127,14 @@ public:
 			incPos();
 			lastSymbolPos = pos;
 			return GREATER;
-		} else if (text[pos]==',') {
-			incPos();
-			lastSymbolPos = pos;
-			return COMMA;
 		} else if (text[pos]=='.') {
 			incPos();
 			lastSymbolPos = pos;
 			return DOT;
+		} else if (text[pos]==',') {
+			incPos();
+			lastSymbolPos = pos;
+			return COMMA;
 		} else if (text[pos]=='[') {
 			incPos();
 			lastSymbolPos = pos;
