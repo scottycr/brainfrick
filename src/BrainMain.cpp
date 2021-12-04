@@ -8,20 +8,67 @@
 
 using namespace std;
 
-int main() {
+int main(int argc, char **argv) {
+	// if (argc < 2) {
+    //     cerr << "You need to provide a file name." << endl;
+    //     return -1;
+    // }
+
+	ostream *uout = &cout;
+
+	ofstream fout;
+	size_t size = 30000;
+
+	for (int i=2; i<argc; i++) {
+		string argvi(argv[i]);
+		if (argvi == "-o" || argvi == "-output") {
+			if (i + 1 < argc) {
+				i++;
+				fout.open(argv[i]);
+				uout = &fout;
+			} else {
+				cerr << "You need to provide an output file." << endl;
+				return -1;
+			}
+		} else if (argvi == "-ts" || argvi == "-table-size") {
+			if (i + 1 < argc) {
+				i++;
+				argvi = string(argv[i]);
+				try {
+					size = stoul(argvi);
+				} catch (const invalid_argument &ia) {
+					cerr << argvi << " is not a valid size." << endl;
+					return -1;
+				}
+				
+			} else {
+				cerr << "You need to provide a valid size." << endl;
+				return -1;
+			}
+		}
+	}
+
+	// string fileName(argv[1]);
+	string fileName = "hello.bf";
 	fstream in;
-	in.open("hello.bf");
+	in.open(fileName);
 	ostringstream sstr;
 	sstr << in.rdbuf();
 	
-	Tokenizer t(sstr.str(), "hello.bf");
+	Tokenizer t(sstr.str(), fileName);
+
+	if (t.isEmpty()) cerr << fileName << " is either empty or does not exist." << endl;
+
 	vector<Symbol> program;
 
 	if (parse(t, program)) {
-		CellTable ct;
-		eval(program, ct);
+		CellTable ct(size);
+		eval(program, ct, *uout);
+		if (fout.is_open()) fout.close();
 		return 0;
 	}
 
-	return 1;
+	if (fout.is_open()) fout.close();
+
+	return -1;
 }
