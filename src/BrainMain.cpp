@@ -3,6 +3,8 @@
 
 #include "BrainTokenizer.hpp"
 #include "BrainParser.hpp"
+#include "BrainCellTable.hpp"
+#include "BrainInterpreter.hpp"
 
 using namespace std;
 
@@ -12,15 +14,14 @@ int main() {
 	ostringstream sstr;
 	sstr << in.rdbuf();
 	
-	Tokenizer t(sstr.str(), "test.bf");
-	vector<Token> program;
+	Tokenizer t(sstr.str(), "hello.bf");
+	vector<Symbol> program;
 
 	if (parse(t, program)) {
-		cout << "Let's go!" << endl;
-		for (auto &t : program) cout << t << endl;
-	} else {
-		cout << "Nope" << endl;
+		CellTable ct;
+		eval(program, ct);
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
