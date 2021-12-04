@@ -9,13 +9,12 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-	// if (argc < 2) {
-    //     cerr << "You need to provide a file name." << endl;
-    //     return -1;
-    // }
+	if (argc < 2) {
+        cerr << "You need to provide a file name." << endl;
+        return -1;
+    }
 
-	ostream *uout = &cout;
-
+	ostream *userOut = &cout;
 	ofstream fout;
 	size_t size = 30000;
 
@@ -25,7 +24,7 @@ int main(int argc, char **argv) {
 			if (i + 1 < argc) {
 				i++;
 				fout.open(argv[i]);
-				uout = &fout;
+				userOut = &fout;
 			} else {
 				cerr << "You need to provide an output file." << endl;
 				return -1;
@@ -48,8 +47,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	// string fileName(argv[1]);
-	string fileName = "hello.bf";
+	string fileName(argv[1]);
 	fstream in;
 	in.open(fileName);
 	ostringstream sstr;
@@ -63,7 +61,7 @@ int main(int argc, char **argv) {
 
 	if (parse(t, program)) {
 		CellTable ct(size);
-		eval(program, ct, *uout);
+		eval(program, ct, *userOut);
 		if (fout.is_open()) fout.close();
 		return 0;
 	}
