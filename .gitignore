@@ -4,6 +4,9 @@
 # Binaries 
 bin/
 
+# Libraries
+lib/
+
 # Prerequisites
 *.d
 
