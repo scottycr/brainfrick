@@ -1,8 +1,12 @@
-#pragma once
-
 #include <vector>
 
-#include "BrainTokenizer.hpp"
+#include "parser.h"
+#include "tokenizer.h"
+
+using namespace std;
+
+using namespace parser;
+using namespace tokenizer;
 
 /*	Source: https://rosettacode.org/wiki/BNF_Grammar#Brainf.2A.2A.2A
 	
@@ -15,7 +19,7 @@ BNF Notation for Brainf***:
 	Command 			::= Command Operation | "[" Command Operation "]"
 */
 
-inline bool commandOperation(Symbol &next) {
+bool parser::commandOperation(Symbol &next) {
 	return (
 		next == PLUS 		||
 		next == MINUS		||
@@ -26,7 +30,7 @@ inline bool commandOperation(Symbol &next) {
 	);
 }
 
-bool command(Tokenizer &t, vector<Symbol> &program) {
+bool parser::command(Tokenizer &t, vector<Symbol> &program) {
 	Symbol next;
 	if (t.canScan()) {
 		next = t.scan();
@@ -58,7 +62,7 @@ bool command(Tokenizer &t, vector<Symbol> &program) {
 	return false;
 }
 
-bool parse(Tokenizer &t, vector<Symbol> &program) {
+bool parser::parse(Tokenizer &t, vector<Symbol> &program) {
 	Symbol next;
 	vector<Symbol> tmp;
 	while (t.canScan()) {

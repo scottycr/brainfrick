@@ -1,12 +1,17 @@
 #include <fstream>
 #include <sstream>
 
-#include "BrainTokenizer.hpp"
-#include "BrainParser.hpp"
-#include "BrainCellTable.hpp"
-#include "BrainInterpreter.hpp"
+#include "tokenizer.h"
+#include "parser.h"
+#include "celltable.h"
+#include "interpreter.h"
 
 using namespace std;
+
+using namespace tokenizer;
+using namespace parser;
+using namespace celltable;
+using namespace interpreter;
 
 int main(int argc, char **argv) {
 	if (argc < 2) {

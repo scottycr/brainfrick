@@ -3,23 +3,22 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
+namespace celltable {
 
 class CellTable {
 private:
-	vector<char> cells;
+	std::vector<char> cells;
 	char *ptr;
 public:
-	CellTable(size_t size=30000) {
-		cells = vector<char>(size, 0);
-		ptr = &cells[0];
-	}
+	CellTable(size_t size=30000);
 
 	inline void add() { (*ptr)++; }
 	inline void minus() { (*ptr)--; }
 	inline void movePtrLeft() { ptr--; }
 	inline void movePtrRight() { ptr++; }
-	inline void print(ostream &out=cout) { out << *ptr; }
-	inline void input(istream &in=cin) { in.get(*ptr); }
+	inline void print(std::ostream &out=std::cout) { out << *ptr; }
+	inline void input(std::istream &in=std::cin) { in.get(*ptr); }
 	inline bool ptrIsNotZero() { return *ptr; }
 };
+
+}

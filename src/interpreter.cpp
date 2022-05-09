@@ -1,18 +1,21 @@
-#pragma once
-
 #include <vector>
 
-#include "BrainTokenizer.hpp"
-#include "BrainCellTable.hpp"
+#include "interpreter.h"
+#include "tokenizer.h"
+#include "celltable.h"
 
 using namespace std;
 
-void eval(
+using namespace interpreter;
+using namespace tokenizer;
+using namespace celltable;
+
+void interpreter::eval(
 	vector<Symbol> &program,
 	CellTable &ct, 
-	ostream &out=cout,
-	istream &in=cin,
-	unsigned index=0
+	ostream &out,
+	istream &in,
+	unsigned index
 ) {
 	unsigned j, bracketsFound, bracketsNeeded;
 	for (unsigned i=index; i<program.size(); i++) {
