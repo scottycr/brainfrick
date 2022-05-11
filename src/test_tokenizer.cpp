@@ -59,3 +59,8 @@ TEST(TokenizerScan, IgnoreCommentLoop) {
     Tokenizer t("[This is a comment loop] +");
     ASSERT_EQ(t.scan(), PLUS);
 }
+
+TEST(TokenizerScan, IgnoreNonTokens) {
+    Tokenizer t("Ignores everything but ,");
+    ASSERT_EQ(t.scan(), COMMA);
+}
