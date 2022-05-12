@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
 	for (int i=2; i<argc; i++) {
 		string argvi(argv[i]);
-		if (argvi == "-o" || argvi == "-output") {
+		if (argvi == "-o" || argvi == "--output-file") {
 			if (i + 1 < argc) {
 				i++;
 				fout.open(argv[i]);
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 				cerr << "You need to provide an output file." << endl;
 				return -1;
 			}
-		} else if (argvi == "-ts" || argvi == "-table-size") {
+		} else if (argvi == "-ts" || argvi == "--table-size") {
 			if (i + 1 < argc) {
 				i++;
 				argvi = string(argv[i]);
