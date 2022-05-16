@@ -55,7 +55,7 @@ The tokenizer has one job, to change the characters from the file into tokens us
 
 The parser uses the tokenizer to check if the code has valid syntax. Brainf only has one instance of invalid syntax, and that is if a loop does not have a matching bracket. The BNF for Brainf is in the `parse.cpp` file.
 
-The parser has three functions. The function commandOperation checks if a character is a Brainf command. The function parse loops through the tokenizer sequentially and only calls the function command if it finds an `OPENBRACKET. If the function parse finds another`OPENBRACKET` while the function command is running, it will call itself recursively until it finds all matching `CLOSEBRACKET`s. If the function command does not match all brackets, it will return false.
+The parser has three functions. The function commandOperation checks if a character is a Brainf command. The function parse loops through the tokenizer sequentially and only calls the function command if it finds an `OPENBRACKET`. If the function parse finds another `OPENBRACKET` while the function command is running, it will call itself recursively until it finds all matching `CLOSEBRACKET`s. If the function command does not match all brackets, it will return false.
 
 If the parser does not find invalid syntax, it will append all the symbols into a vector passed into the parse function. The last step is the cell table and interpreter. The CellTable class is the machine model Brainf uses. 
 
